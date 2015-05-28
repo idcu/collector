@@ -1,0 +1,70 @@
+fos_user:
+    db_driver: orm
+    firewall_name: login
+    user_class: Collector\EntityBundle\Entity\Staff
+    group:
+        group_class:   Collector\EntityBundle\Entity\StaffGroup
+        group_manager: sonata.user.orm.group_manager
+
+    service:
+        user_manager: sonata.user.orm.user_manager
+
+fos_rest:
+    routing_loader:
+        default_format: json
+    view:
+        view_response_listener: true
+    param_fetcher_listener: true
+
+fos_elastica:
+    clients:
+        default: { host: %searcher_host%, port: 9200 }
+    indexes:
+        %searcher_index%:
+            client: default
+            settings:
+                index:
+                    analysis:
+                        filter:
+                            kuromoji_rf:
+                                type: kuromoji_readingform
+                                use_romaji: true
+                            kuromoji_pos:
+                                type: kuromoji_part_of_speech
+                                enable_position_increment: false
+                                stoptags : ["助詞-格助詞-一般", "助詞-終助詞"]
+                            kuromoji_ks:
+                                type: kuromoji_stemmer
+                                minimum_length: 6
+                        tokenizer:
+                            kuromoji:
+                                type: kuromoji_tokenizer
+                                mode: search
+                        analyzer:
+                            kuromoji_analyzer:
+                                type: custom
+                                tokenizer: kuromoji
+                                filter: [kuromoji_rf,kuromoji_pos,kuromoji_ks]
+
+            types:
+                 press:
+                    mappings:
+                        id: {  type: integer }
+                        textToSearch: { analyzer: kuromoji_analyzer }
+                        publishDateToSearch: { type: date }
+                        sourceRank: { type: integer }
+                        hasImage:
+                        disabledToSearch:
+
+                    persistence:
+                        driver: orm
+                        model: Collector\EntityBundle\Entity\Press
+                        finder: ~
+                        listener:
+                            insert: false
+                            update: false
+                            delete: false
+                        repository: Collector\EntityBundle\SearchRepository\PressRepository
+                        provider:
+                            batch_size: 1000
+

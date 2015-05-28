@@ -1,0 +1,14 @@
+php app/console collector:admin:atpress_crawler
+php app/console collector:admin:digitalpr_crawler
+php app/console collector:admin:dreamnews_crawler
+php app/console collector:admin:jcncrawler_crawler
+php app/console collector:admin:news2u_crawler
+php app/console collector:admin:nikkei_crawler
+php app/console collector:press:update
+php app/console collector:admin:prtimes_crawler
+php app/console collector:admin:prwfromoversea_crawler
+php app/console collector:admin:prwjp_crawler
+php app/console collector:admin:prwspecical_crawler
+php app/console collector:admin:prwtooversea_crawler
+php app/console collector:admin:valuepress_crawler
+php app/console collector:admin:zaikei_crawler

@@ -1,0 +1,68 @@
+{% block attach_widget %}
+    <li id ="{{form.vars.id}}">
+        <div>
+            <span>{{form_widget(form)}}</span>&nbsp;<span id="{{form.vars.id}}_title">{% if value != null and value.id != 0 %}{{value.name}}{% endif %}</span>
+            <span>
+                <a id="{{form.vars.id}}_url" href="{% if value != null and value.id != 0 %}{{path('ajax_attach_download', {'id':value.id})}}{% endif %}">ダウンロード</a>
+            </span>&nbsp
+            <span id="{{form.vars.id}}_delete">
+                <a href="javascript:void(0);"><label for="{{form.vars.id}}">削除</label></a>
+            </span>
+        </div>
+        <script type="text/javascript">
+            $('#'+'{{form.vars.id}}_delete').on('click', function(e) {
+                if(window.confirm("このファイルを削除してもよろしいですか？")){
+                    e.preventDefault();
+                    $('#'+'{{form.vars.id}}').remove();
+                }
+            });
+        </script>
+    </li>
+{% endblock %}
+
+{% block attach_collection_widget %}
+    {% spaceless %}
+        <ul id="{{form.vars.id}}_queue" data-prototype="{{ form_widget(form.vars.prototype) | e }}">
+            {% for child in form %}
+                {{ form_widget(child) }}
+                {{ form_errors(child) }}
+            {% endfor %}
+        </ul>
+
+        <input id="{{form.vars.id}}_file_upload" name="file_upload" type="file" multiple="false">
+        <script type="text/javascript">
+            var count = '{{ form | length }}';
+            $(function() {
+                $('#'+'{{form.vars.id}}_file_upload').uploadify({
+                    'formData' : {
+                        'context' : '{{ context }}',
+                        'providerName' : '{{ providerName }}'
+                    },
+                    'queueID'  : '{{form.vars.id}}_queue',
+                    'buttonText' : 'ファイルを添付',
+                    'width' : '138',
+                    'height' : '16',
+                    'fileObjName' : 'attachFile',
+                    'fileSizeLimit' : '10MB',
+                    'successTimeout' : '120',
+                    'removeTimeout' : 1,
+                    'multi'    : true,
+                    'swf'      : '{{asset("bundles/commonform/swf/attach/uploadify.swf")}}',
+                    'uploader' : '{{url('ajax_attach_upload')}}',
+                    'onUploadSuccess' : function(file, data, response) {
+                        var value = jQuery.parseJSON(data);
+                        var queue = $('#'+'{{form.vars.id}}_queue');
+                        var newWidget = queue.attr('data-prototype');
+                        newWidget = newWidget.replace(/\$\$name\$\$/g, count);
+                        $(newWidget).appendTo($('#'+'{{form.vars.id}}_queue'));
+                        $('#'+'{{form.vars.id}}_'+count+'_id').val(value.id);
+                        $('#'+'{{form.vars.id}}_'+count+'_title').html(value.title);
+                        $('#'+'{{form.vars.id}}_'+count+'_url').attr('href',value.url);
+                        count++;
+                        return false;
+                    }
+                });
+            });
+        </script>
+    {% endspaceless %}
+{% endblock %}

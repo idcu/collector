@@ -1,0 +1,12 @@
+parameters:
+    atpress_center_user_provider.class: Common\UserBundle\Security\User\AtpressCenterUserProvider
+
+services:
+    atpress_center_user_provider:
+        class: "%atpress_center_user_provider.class%"
+        arguments:  [@fos_user.user_manager,@center]
+
+    atpress_encoder:
+        class: Common\UserBundle\Encoder\AtpressEncoder
+        calls:
+            - [ setContainer, [ @service_container ] ]

@@ -1,0 +1,66 @@
+{% block form_javascript %}
+{% spaceless %}
+    {% for child in form %}
+        {{ form_javascript(child) }}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_javascript %}
+
+{% block field_javascript "" %}
+
+{% block button_javascript "" %}
+
+{% block datetimePicker_javascript %}
+{% spaceless %}
+  <span class="datebox">
+        {% for child in form %}
+        {% if child.vars.name == "year" %}
+            <span>{{ form_widget(child) }}</span>{{'年'|trans({}, translation_domain) }}
+        {% endif %}
+        {% if child.vars.name == "month" %}
+            <span>{{ form_widget(child) }}</span>{{'月'|trans({}, translation_domain) }}
+        {% endif %}
+        {% if child.vars.name == "day" %}
+            <span>{{ form_widget(child) }}</span>{{'日'|trans({}, translation_domain) }}
+        {% endif %}
+    {% endfor %}
+    {% for child in form %}
+        {{form_errors(child)}}
+    {% endfor %}
+    <input type="hidden" id="{{form.vars.id}}_datepicker" />
+    </span>
+    <script type="text/javascript">
+        $(
+        function() {
+            $('#'+'{{form.vars.id}}_datepicker').datepicker( {
+                showOn: 'button',
+                buttonImage: '/img/common/calendar.gif',
+                buttonImageOnly: true,
+                beforeShow : function() {
+                $('#ui-datepicker-div').css( 'font-size', '100%' );
+                $('#ui-datepicker-div').css( 'width', '265px' );
+                },
+
+
+                <!-- Datepicker クローズ時に、年・月・日に分解してテキストへ設定 -->
+                onClose : function(date) {
+                    if ( date.length > 0 ) {
+                        $('#'+'{{form.vars.id}}_year').val(parseInt(date.split("/")[0]));
+                        $('#'+'{{form.vars.id}}_month').val(parseInt(date.split("/")[1]));
+                        $('#'+'{{form.vars.id}}_day').val(parseInt(date.split("/")[2]));
+                    }
+                }
+            });
+            
+        var date = new Date();
+
+        
+            $('#'+'{{form.vars.id}}_datepicker').datepicker( "option", 'minDate', new Date() );
+        
+        $('#'+'{{form.vars.id}}_datepicker').datepicker( "option", 'maxDate',  new Date(date.getFullYear() + 1, 12 - 1, 31) );
+        }
+        );
+    </script>
+    
+{% endspaceless %}
+{% endblock %}

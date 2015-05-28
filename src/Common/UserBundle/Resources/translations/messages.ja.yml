@@ -1,0 +1,6 @@
+#ログイン画面エラー
+Bad credentials: 会員IDまたはパスワードが違います
+The presented password is invalid.: パスワードが違います
+User account is locked.: 会員審査不通過です
+The presented password cannot be empty.:  パスワードが違います
+User account is disabled.: 本登録が完了していません

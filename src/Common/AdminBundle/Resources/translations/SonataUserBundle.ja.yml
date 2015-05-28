@@ -1,0 +1,4 @@
+user_block_logout: ログアウト
+Bad credentials: ユーザー名またはパスワードが不正です
+
+field.label_roles_editable: 権限

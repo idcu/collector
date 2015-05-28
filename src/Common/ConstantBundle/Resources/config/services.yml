@@ -1,0 +1,11 @@
+parameters:
+    center.class: Common\ConstantBundle\Utility\Center
+    selection.class: Common\ConstantBundle\Utility\Selection
+
+services:
+    center:
+        class:  %center.class%
+        arguments: [ @service_container ]
+
+    selection:
+        class:  %selection.class%

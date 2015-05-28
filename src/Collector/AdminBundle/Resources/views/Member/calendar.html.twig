@@ -1,0 +1,58 @@
+{% extends 'SonataAdminBundle:CRUD:base_show.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bundles/adesignscalendar/css/fullcalendar/fullcalendar.css') }}" />
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+
+    <script type="text/javascript" src="{{ asset('bundles/collectoradmin/js/fullcalendar/jquery.fullcalendar.min.js') }}"></script>
+    {#<script type="text/javascript" src="{{ asset('bundlescollectortadmin/js/calendar-settings.js') }}"></script>#}
+    <script style="javascript">
+        $(function () {
+            var date = new Date();
+            var d = date.getDate();
+            var m = date.getMonth();
+            var y = date.getFullYear();
+
+            $('#calendar-holder').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                lazyFetching: true,
+                timeFormat: {
+                    // for agendaWeek and agendaDay
+                    agenda: 'H:mm',    // 5:00 - 6:30
+
+                    // for all other views
+                    '': 'H:mm'         // 7p
+                },
+                allDayDefault: false,
+                eventSources: [
+                    {
+                        url: Routing.generate('fullcalendar_loader'),
+                        type: 'POST',
+                        // A way to add custom filters to your event listeners
+                        data: {
+                            memberIds: {{ memberIds|serialize('json') }}
+                        },
+                        error: function() {
+                            //alert('There was an error while fetching Google Calendar!');
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block show %}
+    {% include 'ADesignsCalendarBundle::calendar.html.twig' %}
+{% endblock %}
+

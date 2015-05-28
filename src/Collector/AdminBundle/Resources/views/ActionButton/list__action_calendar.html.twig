@@ -1,0 +1,6 @@
+{% if admin.isGranted('VIEW', object) and admin.hasRoute('calendar') %}
+    <a href="{{ admin.generateObjectUrl('calendar', object) }}" class="btn btn-sm btn-default view_link" title="カレンダー">
+        <i class="glyphicon glyphicon-calendar"></i>
+        カレンダー
+    </a>
+{% endif %}

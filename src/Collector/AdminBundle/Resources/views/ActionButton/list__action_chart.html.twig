@@ -1,0 +1,6 @@
+{% if admin.isGranted('VIEW', object) and admin.hasRoute('chart') %}
+    <a href="{{ admin.generateObjectUrl('chart', object) }}" class="btn btn-sm btn-default view_link" title="チャート">
+        <i class="glyphicon glyphicon-stats"></i>
+        チャート
+    </a>
+{% endif %}

@@ -1,0 +1,13 @@
+{% extends 'SonataAdminBundle:CRUD:base_show_field.html.twig' %}
+
+{% block field%}
+    {% for key, val in value %}
+        <div>
+            <a href="{% path  val.image, 'standard'%}">
+                <img src="{% path  val.image, 'standard'%}" alt="{{val.imageTitle}}"/>
+            </a>
+            <p>{{val.imageTitle}}</p>
+            <p>{{val.imageSource}}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

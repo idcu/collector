@@ -1,0 +1,10 @@
+{% extends 'SonataAdminBundle:CRUD:base_show_field.html.twig' %}
+
+{% block field%}
+    {% for key, val in value %}
+        <div>
+            <a href="{% path  val.file, 'reference' %}">ファイル{{ key + 1 }}</a>
+            <p>{{val.fileSource}}</p>
+        </div>
+    {% endfor %}
+{% endblock %}

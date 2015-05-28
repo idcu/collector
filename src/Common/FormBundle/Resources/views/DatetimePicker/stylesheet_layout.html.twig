@@ -1,0 +1,18 @@
+{% block form_stylesheet %}
+{% spaceless %}
+    {% for child in form %}
+        {{ form_stylesheet(child) }}
+    {% endfor %}
+{% endspaceless %}
+{% endblock form_stylesheet %}
+
+{% block field_stylesheet "" %}
+
+{% block button_stylesheet "" %}
+
+
+{% block datetimePicker_stylesheet %}
+{% spaceless %}
+    <link href="{{ asset('bundles/commonform/css/datetimepicker/datetimepicker.css') }}" rel="stylesheet" media="screen">
+{% endspaceless %}
+{% endblock datetimePicker_stylesheet %}

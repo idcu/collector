@@ -1,0 +1,7 @@
+services:
+    validator.unique.username:
+        class: Common\FormBundle\Validator\UniqueUsernameValidator
+        calls:
+          - [setCenter, [ @center ]]
+        tags:
+            - { name: validator.constraint_validator, alias: Common\FormBundle\Validator\UniqueUsernameValidator }

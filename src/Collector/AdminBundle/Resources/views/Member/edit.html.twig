@@ -1,0 +1,16 @@
+{% extends 'SonataAdminBundle:CRUD:base_edit.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style type='text/css'>
+        .table-bordered>thead>tr>th {width: 300px;}
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}
+
+{% block sonata_tab_content %}
+    {{ parent() }}
+{% endblock %}

@@ -1,0 +1,19 @@
+parameters:
+#    common_form.example.class: Common\FormBundle\Example
+
+services:
+    common.twig.extension.datetimePicker:
+        class: Common\FormBundle\Twig\Extension\DatetimePickerExtension
+        tags:
+            - { name: twig.extension }
+        arguments: [ @twig.form.renderer ]
+
+    common.twig.extension.truncate:
+        class: Common\FormBundle\Twig\Extension\TruncateExtension
+        tags:
+            - { name: twig.extension }
+
+    common.twig.extension.toYen:
+        class: Common\FormBundle\Twig\Extension\ToYenExtension
+        tags:
+            - { name: twig.extension }

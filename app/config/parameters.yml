@@ -1,0 +1,22 @@
+parameters:
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: collector
+    database_user: root
+    database_password: symfony2
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: ja
+    secret: c4adas2g1gaeodasdg123b31fa
+
+    #全文検索用サーバー
+    searcher_host: 153.121.65.27
+    searcher_index: collector_prod
+
+    #添付ファイル
+    attach_filesystem: sonata.media.filesystem.local
+    attach_server_path: /home/apache/data/web/uploads/media
+    attach_ftp_host: localhost

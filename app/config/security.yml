@@ -1,0 +1,46 @@
+security:
+    encoders:
+        Collector\EntityBundle\Entity\Staff:
+            algorithm: sha512
+            encode_as_base64: false
+            iterations: 1
+
+    role_hierarchy:
+        ROLE_ADMIN:       [ROLE_USER,, ROLE_SONATA_ADMIN]
+        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+    providers:
+        fos_userbundle:
+            id: fos_user.user_manager
+
+    firewalls:
+        dev:
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            switch_user:      true
+            pattern:           /.*
+            context:            user
+            form_login:
+                provider:       fos_userbundle
+                login_path:     /login
+                use_forward:    false
+                check_path:     /login_check
+                failure_path:   null
+                use_referer:    true
+            logout:
+                path:           /logout
+            anonymous:    true
+
+    access_control:
+            - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/logout$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/login-check$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/exceptions$, role: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/rest/.*$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/ajax/.*$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+#            - { path: ^/.*, role: IS_AUTHENTICATED_ANONYMOUSLY }
+            - { path: ^/.*, role: ROLE_ADMIN }
+    acl:
+        connection: default

@@ -1,0 +1,25 @@
+parameters:
+#    common_admin.example.class: Common\AdminBundle\Example
+
+services:
+    sonata.admin.exporter:
+        class: Common\AdminBundle\Export\Exporter
+
+    sonata.admin.builder.orm_datagrid:
+        class: Common\AdminBundle\Builder\DatagridBuilder
+        arguments: [ @form.factory,@sonata.admin.builder.filter.factory,@sonata.admin.guesser.orm_datagrid_chain,%form.type_extension.csrf.enabled% ]
+        calls:
+          - [setCenter, [ @center ]]
+
+    admin.model_manager:
+        class: Common\AdminBundle\Model\ModelManager
+        arguments:
+                 - @doctrine
+
+    admin.center.filter.type.string:
+        class: Common\AdminBundle\Filter\CenterStringFilter
+        tags:
+          - { name: sonata.admin.filter.type, alias: center_string }
+        calls:
+          - [setCenter, [ @center ]]
+

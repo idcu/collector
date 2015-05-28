@@ -1,0 +1,66 @@
+{% extends 'SonataBlockBundle:Block:block_base.html.twig' %}
+
+{% block block %}
+<h3>与信状態要確認の会社一覧</h3>
+<div class="box box-primary">
+    <div class="box-body table-responsive no-padding">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="sonata-ba-list-field-header">
+                    <th class="sonata-ba-list-field-header-text  sonata-ba-list-field-header-order-asc ">会社名</th>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                    <th class="sonata-ba-list-field-header-text  sonata-ba-list-field-header-order-asc ">会社名(カナ)</th>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                    <th class="sonata-ba-list-field-header-text  sonata-ba-list-field-header-order-asc ">代表者（姓）</th>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                    <th class="sonata-ba-list-field-header-text  sonata-ba-list-field-header-order-asc ">代表者（名）</th>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                    <th class="sonata-ba-list-field-header-date  sonata-ba-list-field-header-order-asc ">与信チェック日</th>                                                                                                                                                                                                            
+                    <th class="sonata-ba-list-field-header-orm_many_to_one ">
+                        与信状態
+                    </th>                                                                                                                                                                                                            
+                    <th class="sonata-ba-list-field-header-actions ">
+                        action
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% if data is defined and data is not empty   %}
+                {%  for val in data %}
+                    <tr>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-text">
+                            {{val.companyName}}
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-text">
+                            {{val.companyNameKana}}
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-text">
+                            {{val.presidentLastName}}
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-text">
+                            {{val.presidentFirstName}}
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-date">
+                            {% if val.creditCheckDate|date('Y年m月d日')>0 %}
+                            {{val.creditCheckDate|date('Y年m月d日')}}
+                            {% endif %}
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-orm_many_to_one">
+                            <a href="{{path('admin_collector_entity_company_edit',{'id':val.id})}}">要確認</a>
+                        </td>
+                        <td objectid="{{val.id}}" class="sonata-ba-list-field sonata-ba-list-field-actions">
+                            <div class="btn-group">
+                                <a title="表示" class="btn btn-sm btn-default view_link" href="{{path('admincollectort_entity_company_edit',{'id':val.id})}}">
+                                    <i class="glyphicon glyphicon-zoom-in"></i>
+                                    表示
+                                </a>
+                                <a title="編集" class="btn btn-sm btn-default edit_link" href="{{path('admicollectoret_entity_company_show',{'id':val.id})}}">
+                                    <i class="glyphicon glyphicon-edit"></i>
+                                    要確認
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor%}
+                {% endif%}
+            </tbody></table>
+    </div>
+</div>
+{% endblock %}

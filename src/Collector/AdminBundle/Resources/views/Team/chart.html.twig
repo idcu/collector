@@ -1,0 +1,19 @@
+{% extends 'SonataAdminBundle:CRUD:base_show.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="//code.highcharts.com/4.0.1/highcharts.js"></script>
+    <script src="//code.highcharts.com/4.0.1/modules/exporting.js"></script>
+    <script type="text/javascript">
+        {{ chart(chart) }}
+    </script>
+{% endblock %}
+
+{% block show %}
+    <div id="chart" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+{% endblock %}
+

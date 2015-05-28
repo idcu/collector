@@ -1,0 +1,35 @@
+parameters:
+#    common_form.example.class: Common\FormBundle\Example
+
+services:
+    form.type.tel:
+        class: Common\FormBundle\Form\Type\TelType
+        tags:
+            - { name: form.type, alias: tel }
+
+    form.type.zip:
+        class: Common\FormBundle\Form\Type\ZipType
+        tags:
+            - { name: form.type, alias: zip }
+
+    form.type.datetimePicker:
+        class: Common\FormBundle\Form\Type\DatetimePickerType
+        tags:
+            - { name: form.type, alias: datetimePicker }
+
+    form.type.datetimePicker.range:
+        class: Common\FormBundle\Form\Type\DatetimePickerRangeType
+        tags:
+          - { name: form.type, alias: datetimePickerRange }
+        arguments:
+                 - @translator
+
+    form.type.attach.file:
+        class: Common\FormBundle\Form\Type\AttachFileType
+        tags:
+            - { name: form.type, alias: attach_file }
+
+    form.type.attach.file.collection:
+        class: Common\FormBundle\Form\Type\AttachFileCollectionType
+        tags:
+            - { name: form.type, alias: attach_file_collection }

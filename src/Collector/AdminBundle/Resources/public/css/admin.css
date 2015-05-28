@@ -1,0 +1,92 @@
+.box .box-body .table {
+    margin-bottom: 50px !important;
+}
+
+.box-title{
+    font-weight: bolder !important;
+}
+
+.sonata-ba-view>.table-bordered>thead>tr>th, .table-bordered>thead>tr>td{
+    border-bottom-width: 2px;
+    border-bottom-color: #3c8dbc;
+}
+
+.sonata-ba-view>form>.table-bordered>thead>tr>th, .table-bordered>thead>tr>td{
+    border-bottom-width: 2px;
+    border-bottom-color: #3c8dbc;
+}
+
+
+.sonata-ba-view-title {
+    font-size: 120%;
+    margin: 15px 0px 5px 0px;
+    padding: 5px 10px;
+    background-color: white;
+    font-weight: bold;
+}
+
+.sonata-ba-view-container th{
+    background-color:#f0f7fd !important;
+    border-color: #999 !important;
+}
+
+.sonata-ba-view-container td{
+    background-color:#f7f7f7 !important;
+    border-color: #999 !important;
+}
+
+.sonata-ba-collapsed-fields {
+    display:table;
+    border-top:2px solid #3c8dbc;
+    border-left:1px solid #999;
+    border-right:1px solid #999;
+    width: 100%;
+}
+
+.sonata-ba-collapsed-fields>.form-group {
+    display: table-row;
+}
+
+.sonata-ba-collapsed-fields>.form-group>label {
+    display:table-cell;
+    text-align:left;
+    vertical-align:middle;
+    margin:15px;
+    padding:15px;
+    width: 250px;
+    border-right:1px solid #999;
+    border-bottom:1px solid #999;
+    background-color:#f0f7fd;
+}
+
+.sonata-ba-collapsed-fields>.form-group>label.required {
+    background-image: url('../../../bundles/collectoradmin/images/required.png');
+    background-repeat: no-repeat;
+    background-position: 95% 50%;
+}
+
+.sonata-ba-collapsed-fields>.form-group>.required:after {
+    content: "" ;
+}
+
+.sonata-ba-collapsed-fields>.form-group>div {
+    display:table-cell;
+    margin:15px;
+    padding:15px;
+    border-bottom:1px solid #999;
+    background-color:#f7f7f7;
+}
+
+textarea.form-control{
+    height: 200px;
+}
+
+ul.SIpt1 li{ float:left;padding:5px;}
+.SIpt1 { display: inline-block;padding:5px;}
+.SIpt1Wid60 { width:48px;}
+.SIpt1Wid100 { width:100px;}
+.SIpt1Wid200 { width:188px;}
+.SIpt1Wid210 { width:198px;}
+.SIpt1Wid260 { width:248px;}
+.SIpt1Wid350 { width:338px;}
+.PriceSIpt1Wid200 { width:188px;margin-bottom:5px;margin-right:5px;float:left}

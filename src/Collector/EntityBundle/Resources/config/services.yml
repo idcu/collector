@@ -1,0 +1,26 @@
+parameters:
+    collector.staff.class: Collector\EntityBundle\Entity\Staff
+    collector.press.class: Collector\EntityBundle\Entity\Press
+    collector.press.image.class: Collector\EntityBundle\Entity\PressImage
+    collector.press.file.class: Collector\EntityBundle\Entity\FileImage
+    collector.company.class: Collector\EntityBundle\Entity\Company
+    collector.source.class: Collector\EntityBundle\Entity\Source
+    entity.listener.update.timestamps.class: Collector\EntityBundle\EventListener\UpdateTimestamps
+#    entity.listener.update.company.class: Collector\EntityBundle\EventListener\UpdateCompany
+
+services:
+    entity.listener.update.timestamps:
+        class: %entity.listener.update.timestamps.class%
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+            - { name: doctrine.event_listener, event: preUpdate }
+        calls:
+            - [ setContainer, [ @service_container ]]
+
+#    entity.listener.update.company:
+#        class: %entity.listener.update.company.class%
+#        tags:
+#            - { name: doctrine.event_listener, event: prePersist }
+#            - { name: doctrine.event_listener, event: preUpdate }
+#        calls:
+#            - [ setContainer, [ @service_container ]]

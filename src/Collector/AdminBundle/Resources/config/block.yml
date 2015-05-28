@@ -1,0 +1,10 @@
+parameters:
+
+services:
+#    collector.block.company:
+#        class: Collector\AdminBundle\Block\CompanyBlockService
+#        tags:
+#            - { name: sonata.block }
+#        calls:
+#            - [ entityManager, [ @doctrine.orm.entity_manager ]]
+#        arguments: [collector.block.company,@templating]

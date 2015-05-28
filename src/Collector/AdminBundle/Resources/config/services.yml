@@ -1,0 +1,52 @@
+parameters:
+    collector.staff.admin.class: Collector\AdminBundle\Admin\StaffAdmin
+    collector.staff.admin.controller: CollectorAdminBundle:StaffAdmin
+    collector.press.admin.class:  Collector\AdminBundle\Admin\PressAdmin
+    collector.press.admin.controller:  CollectorAdminBundle:PressAdmin
+    collector.press.image.admin.class:  Collector\AdminBundle\Admin\PressImageAdmin
+    collector.press.image.admin.controller:  CollectorAdminBundle:PressImageAdmin
+    collector.press.file.admin.class:  Collector\AdminBundle\Admin\PressFileAdmin
+    collector.press.file.admin.controller:  CollectorAdminBundle:PressFileAdmin
+    collector.company.admin.class:  Collector\AdminBundle\Admin\CompanyAdmin
+    collector.company.admin.controller:  CollectorAdminBundle:CompanyAdmin
+    collector.source.admin.class:  Collector\AdminBundle\Admin\SourceAdmin
+    collector.source.admin.controller:  CollectorAdminBundle:SourceAdmin
+
+services:
+    collector.staff.admin:
+        class:  %collector.staff.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: Staff }
+        arguments: [null,%collector.staff.class%,%collector.staff.admin.controller%]
+
+    collector.press.admin:
+        class:  %collector.press.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: Press }
+        arguments: [null,%collector.press.class%,%collector.press.admin.controller%]
+
+    collector.press.image.admin:
+        class:  %collector.press.image.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: PressImage }
+        arguments: [null,%collector.press.image.class%,%collector.press.image.admin.controller%]
+
+    collector.press.file.admin:
+        class:  %collector.press.file.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: PressFile }
+        arguments: [null,%collector.press.file.class%,%collector.press.file.admin.controller%]
+
+    collector.company.admin:
+        class:  %collector.company.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: Company }
+        arguments: [null,%collector.company.class%,%collector.company.admin.controller%]
+        calls:
+          - [ addChild, [@collector.press.admin] ]
+
+    collector.source.admin:
+        class:  %collector.source.admin.class%
+        tags:
+          - { name: sonata.admin, manager_type: orm, group: sonata_page, label: Source }
+        arguments: [null,%collector.source.class%,%collector.source.admin.controller%]

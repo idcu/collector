@@ -1,0 +1,8 @@
+parameters:
+#    common_form.example.class: Common\FormBundle\Example
+
+services:
+    form.extension.notice:
+        class: Common\FormBundle\Form\Extension\FieldTypeNoticeExtension
+        tags:
+            - { name: form.type_extension, alias: form }
