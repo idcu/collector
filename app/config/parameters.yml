@@ -1,3 +1,4 @@
+# This file is auto-generated during the composer install
 parameters:
     database_driver: pdo_mysql
     database_host: 127.0.0.1
@@ -11,12 +12,8 @@ parameters:
     mailer_password: null
     locale: ja
     secret: c4adas2g1gaeodasdg123b31fa
-
-    #全文検索用サーバー
     searcher_host: 153.121.65.27
     searcher_index: collector_prod
-
-    #添付ファイル
     attach_filesystem: sonata.media.filesystem.local
     attach_server_path: /home/apache/data/web/uploads/media
     attach_ftp_host: localhost
