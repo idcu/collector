@@ -69,12 +69,12 @@ class prtimesAjaxCrawlerCommand extends ContainerAwareCommand
 
                         $press['press_source'] = $pressSource;
                         $press['press_url'] = $pressUrl;
-                        $output->writeln($press['press_url']);
+                        //$output->writeln($press['press_url']);
                         //                $output->writeln($crawler->filter('article')->html());
                         $press['press_publish_date'] = date('Y-m-d H:i:s', strtotime($crawler->filter('.header-release-detail>.information-release>time')->attr('datetime')));
-                        $output->writeln($press['press_publish_date']);
+                        //$output->writeln($press['press_publish_date']);
                         $press['press_title'] = $crawler->filter('.header-release-detail>h2')->text();
-                        $output->writeln($press['press_title']);
+                        //$output->writeln($press['press_title']);
                         $subtitle = $crawler->filter('.header-release-detail>h3');
                         if ($subtitle->count() > 0)
                             $press['press_subtitle'] = $subtitle->text();
@@ -83,7 +83,7 @@ class prtimesAjaxCrawlerCommand extends ContainerAwareCommand
                         } catch (\Exception $e) {
                             $press['company_name'] = trim($crawler->filter('.information-release>.company-name')->text(), '');
                         }
-                        $output->writeln($press['company_name']);
+                        //$output->writeln($press['company_name']);
 
                         $textArray = $crawler->filter('.rbody')->children()->each(function (Crawler $node, $i) {
                             return $node->text();
@@ -94,6 +94,13 @@ class prtimesAjaxCrawlerCommand extends ContainerAwareCommand
                             return $node->html();
                         });
                         $press['press_content'] = implode('', $htmlArray);
+
+                        $fileArray = $crawler->filter('.box>.file')->children()->each(function (Crawler $node, $i) {
+                            return $node->html();
+                        });
+                        $imageFileArray = $crawler->filter('ul.slide')->children()->each(function (Crawler $node, $i) {
+                            return $node->html();
+                        });
 
                         $crawler->clear();
                         $crawler->addContent($press['press_content']);
@@ -107,17 +114,37 @@ class prtimesAjaxCrawlerCommand extends ContainerAwareCommand
                             return $image;
                         });
                         $press['images'] = $images;
+
+                        $crawler->addContent(implode('', $imageFileArray));
+                        $imageFiles = $crawler->filter('a')->each(function (Crawler $node, $i) {
+                            $imageFile['url'] = $node->attr('href');
+                            $uri = 'http://www.prtimes.jp' . $imageFile['url'];
+                            $imageFile['absolute_url'] = $uri;
+                            $imageFile['title'] = $node->text();
+                            return $imageFile;
+                        });
+                        $press['imageFiles'] = $imageFiles;
+                        $crawler->clear();
+                        $crawler->addContent(implode('', $fileArray));
+                        $files = $crawler->filter('a')->each(function (Crawler $node, $i) {
+                            $file['url'] = $node->attr('href');
+                            $uri = 'http://www.prtimes.jp' . $file['url'];
+                            $file['absolute_url'] = $uri;
+                            $file['title'] = $node->text();
+                            return $file;
+                        });
+                        $press['files'] = $files;
                         $presses[] = $press;
                     } catch (\Exception $e) {
                         $output->writeln($e->getMessage());
                         continue;
                     }
                 }
-                $buzz = $this->getContainer()->get('buzz');
-                $buzz->getClient()->setTimeout(100000);
-                $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
-                $output->writeln($result);
             }
+            $buzz = $this->getContainer()->get('buzz');
+            $buzz->getClient()->setTimeout(100000);
+            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
+            $output->writeln($result);
         }
     }
 

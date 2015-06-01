@@ -34,15 +34,16 @@ class mapionPrtimesCrawlerCommand extends ContainerAwareCommand
             $response = $browser->get($pressList);
             $content = $response->getContent();
             $crawler->addContent($content);
-            $pressUrls = $crawler->filter('#itemThumbnailView>div.container-thumbnail-list>article>h1>a')->each(function (Crawler $node, $i) {
+            $pressUrls = $crawler->filter('#itemThumbnailView>div.container-thumbnail-list>article>h3>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
             $presses = array();
-
+           
             foreach ($pressUrls as $pressUrl) {
                 try {
                     $pressUrl = 'http://prtimes.jp' . $pressUrl;
-//                    $pressUrl = "http://prtimes.jp/main/html/rd/p/000000027.000006024.html";
+                    $pressUrl = "http://prtimes.jp/main/html/rd/p/000000027.000006024.html";
+                    
                     $response = $browser->get($pressUrl);
                     $content = $response->getContent();
                     $crawler->clear();
@@ -50,11 +51,11 @@ class mapionPrtimesCrawlerCommand extends ContainerAwareCommand
 
                     $press['press_source'] = $pressSource;
                     $press['press_url'] = $pressUrl;
-                    $output->writeln($press['press_url']);
+                    //$output->writeln($press['press_url']);
                     $press['press_publish_date'] = date('Y-m-d H:i:s', strtotime($crawler->filter('.header-release-detail>.information-release>time')->attr('datetime')));
-                    $output->writeln($press['press_publish_date']);
+                    //$output->writeln($press['press_publish_date']);
                     $press['press_title'] = $crawler->filter('.header-release-detail>h2')->text();
-                    $output->writeln($press['press_title']);
+                    //$output->writeln($press['press_title']);
                     $subtitle = $crawler->filter('.header-release-detail>h3');
                     if ($subtitle->count() > 0)
                         $press['press_subtitle'] = $subtitle->text();
@@ -63,7 +64,7 @@ class mapionPrtimesCrawlerCommand extends ContainerAwareCommand
                     } catch (\Exception $e) {
                         $press['company_name'] = trim($crawler->filter('.information-release>.company-name')->text(), '');
                     }
-                    $output->writeln($press['company_name']);
+                    //$output->writeln($press['company_name']);
 
 
                     $textArray = $crawler->filter('.rbody')->children()->each(function (Crawler $node, $i) {
@@ -100,7 +101,6 @@ class mapionPrtimesCrawlerCommand extends ContainerAwareCommand
                         $imageFile['url'] = $node->attr('href');
                         $uri = 'http://www.prtimes.jp' . $imageFile['url'];
                         $imageFile['absolute_url'] = $uri;
-                        $imageFile['type'] = 'file';
                         $imageFile['title'] = $node->text();
                         return $imageFile;
                     });
@@ -111,20 +111,18 @@ class mapionPrtimesCrawlerCommand extends ContainerAwareCommand
                         $file['url'] = $node->attr('href');
                         $uri = 'http://www.prtimes.jp' . $file['url'];
                         $file['absolute_url'] = $uri;
-                        $file['type'] = 'file';
                         $file['title'] = $node->text();
                         return $file;
                     });
                     $press['files'] = $files;
                     $presses[] = $press;
+                    
                 } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     continue;
                 }
             }
-//            $output->writeln(json_encode($press['images']));
-//            $output->writeln(json_encode($press['imageFiles']));
-//            $output->writeln(json_encode($press['files']));
+
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);
             $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();

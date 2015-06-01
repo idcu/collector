@@ -11,6 +11,7 @@ parameters:
     collector.company.admin.controller:  CollectorAdminBundle:CompanyAdmin
     collector.source.admin.class:  Collector\AdminBundle\Admin\SourceAdmin
     collector.source.admin.controller:  CollectorAdminBundle:SourceAdmin
+    buzz.client.timeout: 60000
 
 services:
     collector.staff.admin:

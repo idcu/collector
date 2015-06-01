@@ -52,11 +52,12 @@ class news2uCrawlerCommand extends ContainerAwareCommand
             $pressUrls = $crawler->filter('#main_column>ul.release_list>li>div>h3>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
             foreach ($pressUrls as $pressUrl) {
                 //$pressUrl = 'http://www.news2u.net/releases/132412';
-                $pressUrl = 'http://www.news2u.net'.$pressUrl;
+                $pressUrl = 'http://www.news2u.net' . $pressUrl;
+                //$output->writeln($pressUrl);
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->addContent($content);
@@ -65,14 +66,14 @@ class news2uCrawlerCommand extends ContainerAwareCommand
                 $press['press_url'] = $pressUrl;
                 $date = date_create_from_format('Y年m月d日 H時i分', $crawler->filter('.release_information>.release_date')->text());
                 $press['press_publish_date'] = date_format($date, 'Y-m-d H:i:s');
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = $crawler->filter('.release_information>h1')->text();
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
                 //$subtitle = $crawler->filter('#pressdetail>.subttl');
                 //if ($subtitle->count()>0) $press['press_subtitle'] = $subtitle->text();
                 $press['press_subtitle'] = '';
                 $press['company_name'] = $crawler->filter('.corporate_name')->text();
-                $output->writeln($press['company_name']);
+                //$output->writeln($press['company_name']);
 
                 $textArray = $crawler->filter('.release_body')->children()->each(function (Crawler $node, $i) {
                     return $node->text();
@@ -83,6 +84,15 @@ class news2uCrawlerCommand extends ContainerAwareCommand
                     return $node->html();
                 });
                 $press['press_content'] = implode('', $htmlArray);
+
+                $imageFiles = $crawler->filter('.release_attachment_inner>ul>li>a>img')->each(function (Crawler $node, $i) {
+                    $imageFile['url'] = $node->attr('src');
+                    $uri = $imageFile['url'];
+                    $imageFile['absolute_url'] = $uri;
+                    $imageFile['title'] = $node->attr('title');
+                    return $imageFile;
+                });
+                $press['imageFiles'] = $imageFiles;
 
                 $crawler->clear();
                 $crawler->addContent($press['press_content']);
@@ -96,12 +106,12 @@ class news2uCrawlerCommand extends ContainerAwareCommand
                 });
                 $press['images'] = $images;
                 $presses[] = $press;
-
-                $buzz = $this->getContainer()->get('buzz');
-                $buzz->getClient()->setTimeout(100000);
-                $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
-                $output->writeln($result);
             }
+            //print_r($presses);exit;
+            $buzz = $this->getContainer()->get('buzz');
+            $buzz->getClient()->setTimeout(100000);
+            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
+            $output->writeln($result);
         }
     }
 

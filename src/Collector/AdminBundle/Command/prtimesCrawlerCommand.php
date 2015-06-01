@@ -46,7 +46,7 @@ class prtimesCrawlerCommand extends ContainerAwareCommand
 
         $pressSource = 'http://prtimes.jp/';
         for ($page = 1; $page <= $pageNum; $page++) {
-            $pressList = "http://prtimes.jp/main/html/index/pagenum/".$page;
+            $pressList = "http://prtimes.jp/main/html/index/pagenum/" . $page;
             $response = $browser->get($pressList);
             $content = $response->getContent();
             $crawler->addContent($content);
@@ -55,11 +55,11 @@ class prtimesCrawlerCommand extends ContainerAwareCommand
             });
 
             $presses = array();
-            
+
             foreach ($pressUrls as $pressUrl) {
                 try {
-                    $pressUrl = 'http://prtimes.jp'.$pressUrl;
-                    $pressUrl = 'http://prtimes.jp/main/html/rd/p/000000027.000006024.html';
+                    $pressUrl = 'http://prtimes.jp' . $pressUrl;
+                    //$pressUrl = 'http://prtimes.jp/main/html/rd/p/000000027.000006024.html';
                     $response = $browser->get($pressUrl);
                     $content = $response->getContent();
                     $crawler->clear();
@@ -67,17 +67,17 @@ class prtimesCrawlerCommand extends ContainerAwareCommand
 
                     $press['press_source'] = $pressSource;
                     $press['press_url'] = $pressUrl;
-                    $output->writeln($press['press_url']);
-    //                $output->writeln($crawler->filter('article')->html());
+                    //$output->writeln($press['press_url']);
+                    //                $output->writeln($crawler->filter('article')->html());
                     $press['press_publish_date'] = date('Y-m-d H:i:s', strtotime($crawler->filter('.header-release-detail>.information-release>time')->attr('datetime')));
-                    $output->writeln($press['press_publish_date']);
+                    //$output->writeln($press['press_publish_date']);
                     $press['press_title'] = $crawler->filter('.header-release-detail>h2')->text();
-                    $output->writeln($press['press_title']);
+                    //$output->writeln($press['press_title']);
                     $subtitle = $crawler->filter('.header-release-detail>h3');
                     if ($subtitle->count() > 0)
                         $press['press_subtitle'] = $subtitle->text();
                     $press['company_name'] = trim($crawler->filter('.information-release>.company-name>a')->text(), '');
-                    $output->writeln($press['company_name']);
+                    //$output->writeln($press['company_name']);
 
 
                     $textArray = $crawler->filter('.rbody')->children()->each(function (Crawler $node, $i) {
@@ -107,7 +107,7 @@ class prtimesCrawlerCommand extends ContainerAwareCommand
                     });
                     $press['images'] = $images;
                     $press['press_content'] = implode('', $htmlArray);
-                    
+
                     $crawler->clear();
 
                     $crawler->addContent(implode('', $imageFileArray));
@@ -120,10 +120,9 @@ class prtimesCrawlerCommand extends ContainerAwareCommand
                         return $imagefile;
                     });
                     $press['imagefile'] = $imagefile;
-                    
+
                     $presses[] = $press;
-                }
-                catch (\Exception $e) {
+                } catch (\Exception $e) {
                     $output->writeln($e->getMessage());
                     continue;
                 }

@@ -54,37 +54,64 @@ class nikkeiCrawlerCommand extends ContainerAwareCommand{
             $pressUrls = $crawler->filter('#release>ul.ul_sq>li>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
             foreach($pressUrls as $pressUrl)
             {
-                //$pressUrl = 'http://release.nikkei.co.jp/detail.cfm?relID=379661&lindID=5';
-                $pressUrl = $pressSource.'/'.$pressUrl;
+                
+                $pressUrl = $pressSource.$pressUrl; 
+                
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->addContent($content);
-
+                
                 $press['press_source'] = $pressSource;
                 $press['press_url'] = $pressUrl;
                 $date = date_create_from_format('Y/m/d', $crawler->filter('#re_table>tr>td')->eq(1)->text());
                 $press['press_publish_date'] = date_format($date, 'Y-m-d');
 
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = $crawler->filter('#heading')->text();
-                $output->writeln($press['press_title']);
+               
+                //$output->writeln($press['press_title']);
                 //$subtitle = $crawler->filter('#pressdetail>.subttl');
                 //if ($subtitle->count()>0) $press['press_subtitle'] = $subtitle->text();
                 $press['press_subtitle'] = '';
-                $company_name = $crawler->filter('#re_table>tr>td')->eq(2)->text();
+                $company_name = $crawler->filter('#re_table>tr>td')->eq(2)->html();
                 $company_name = explode('|', $company_name);
+
+
                 $press['company_name'] = str_replace(' ','',trim($company_name[0]));
-                $output->writeln($press['company_name']);
-                $textArray = $crawler->filter('div#contents>p')->eq(1)->text();
-
-                $press['press_content_text']=$textArray;
-                $htmlArray = $crawler->filter('div#contents>p')->eq(1)->html();
-                $press['press_content']=$htmlArray;
-
+                $press['press_content_text']=$crawler->filter('#heading')->nextAll()->text();
+                $press['press_content']=$crawler->filter('#heading')->nextAll()->html();
+                
+                $imageFiles = $crawler->filter('.tokushu>ul')->eq(1)->filter('li')->each(function (Crawler $node, $i) {
+                    preg_match_all("#=(.*?)'#i", $node->filter('a')->attr('href'), $match); 
+                    $str = explode('.',$match[1][0]);
+                    if(isset($str[1]) && $str[1]=='JPG'){
+                        $imageFile['url'] = $match[1][0];
+                        $uri = 'http://release.nikkei.co.jp/attach_file/'.$imageFile['url'];
+                        $imageFile['absolute_url'] = $uri;
+                        $imageFile['title'] = trim($node->text());
+                        return $imageFile;
+                    }
+                });
+                $files = $crawler->filter('.tokushu>ul')->eq(1)->filter('li')->each(function (Crawler $node, $i) {
+                    preg_match_all("#'(.*?)'#i", $node->filter('a')->attr('href'), $match); 
+                    $str = explode('.',$match[1][0]);
+                    if(isset($str[1]) && $str[1]=='pdf'){
+                        $file['url'] = str_replace('attach.cfm?attID=', '', $match[1][0]);
+                        //http://release.nikkei.co.jp/attach_file/0387977_02.pdf
+                        $uri = 'http://release.nikkei.co.jp'.$file['url'];
+                        $file['absolute_url'] = $uri;
+                        $file['title'] = trim($node->text());
+                        return $file;
+                    }
+                });
+                $press['imageFiles'] = $imageFiles;
+                $press['files'] = $files;
+                
+                
                 $crawler->clear();
                 $crawler->addContent($press['press_content']);
                 $images = $crawler->filter('img')->each(function (Crawler $node, $i) {
@@ -97,13 +124,13 @@ class nikkeiCrawlerCommand extends ContainerAwareCommand{
                 });
                 $press['images'] = $images;
                 $presses[] = $press;
-
-
-                $buzz = $this->getContainer()->get('buzz');
-                $buzz->getClient()->setTimeout(100000);
-                $result = $buzz->post("http://collector.cointelligence.cn/rest/presses",array(),json_encode($presses))->getContent();
-                $output->writeln($result);
+               
             }
+         
+            $buzz = $this->getContainer()->get('buzz');
+            $buzz->getClient()->setTimeout(100000);
+            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses",array(),json_encode($presses))->getContent();
+            $output->writeln($result);
         }
     }
 

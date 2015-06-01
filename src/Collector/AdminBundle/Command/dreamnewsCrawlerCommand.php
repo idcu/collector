@@ -45,19 +45,20 @@ class dreamnewsCrawlerCommand extends ContainerAwareCommand
 
         $pressSource = 'http://www.dreamnews.jp/';
         for ($page = 1; $page <= $pageNum; $page++) {
-            $pressList = "http://www.dreamnews.jp/category/0/".$page."/";
+            $pressList = "http://www.dreamnews.jp/category/0/" . $page . "/";
             $response = $browser->get($pressList);
             $content = $response->getContent();
             $crawler->addContent($content);
             $pressUrls = $crawler->filter('#feed>div.feedItem>.feedhead>.detail>.title>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            
-            $output->writeln($pressUrls);
+
+            //$output->writeln($pressUrls);
             $presses = array();
             foreach ($pressUrls as $pressUrl) {
                 //$pressUrl = 'http://www.dreamnews.jp/press/0000106557/';
-
+                //$output->writeln($pressUrl);exit;
+                
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->addContent($content);
@@ -66,14 +67,14 @@ class dreamnewsCrawlerCommand extends ContainerAwareCommand
                 $press['press_url'] = $pressUrl;
                 $date = date_create_from_format('Y年m月d日 H:i', $crawler->filter('#headSec>.date')->text());
                 $press['press_publish_date'] = date_format($date, 'Y-m-d H:i:s');
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = $crawler->filter('#headSec>h1')->text();
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
                 //$subtitle = $crawler->filter('#headSec>h1');
                 //if ($subtitle->count()>0) $press['press_subtitle'] = $subtitle->text();
                 $press['press_subtitle'] = '';
                 $press['company_name'] = $crawler->filter('#company_name')->text();
-                $output->writeln($press['company_name']);
+                //$output->writeln($press['company_name']);
 
                 $textArray = $crawler->filter('#section01')->children()->each(function (Crawler $node, $i) {
                     if ($node->attr('class') == 'logo' ||
@@ -105,13 +106,12 @@ class dreamnewsCrawlerCommand extends ContainerAwareCommand
                 });
                 $press['images'] = $images;
                 $presses[] = $press;
-
-
-                $buzz = $this->getContainer()->get('buzz');
-                $buzz->getClient()->setTimeout(100000);
-                $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
-                $output->writeln($result);
             }
+            //print_r($presses);exit;
+            $buzz = $this->getContainer()->get('buzz');
+            $buzz->getClient()->setTimeout(100000);
+            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
+            $output->writeln($result);
         }
     }
 

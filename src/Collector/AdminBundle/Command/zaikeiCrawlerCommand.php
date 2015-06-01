@@ -51,12 +51,13 @@ class zaikeiCrawlerCommand extends ContainerAwareCommand
             $pressUrls = $crawler->filter('.news_list>div.article_02>p.link>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
 
             foreach ($pressUrls as $pressUrl) {
                 $pressUrl = 'http://www.zaikei.co.jp' . $pressUrl;
                 //$pressUrl = 'http://www.zaikei.co.jp/releases/229116/';
+                 
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->clear();
@@ -64,15 +65,15 @@ class zaikeiCrawlerCommand extends ContainerAwareCommand
 
                 $press['press_source'] = $pressSource;
                 $press['press_url'] = $pressUrl;
-                $output->writeln($press['press_url']);
+                //$output->writeln($press['press_url']);
                 $date = date_create_from_format('Y-m-d H:i:s', $crawler->filter('.pankuzu>.fr')->text());
                 $press['press_publish_date'] = date_format($date, 'Y-m-d H:i:s');
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = $crawler->filter('#kiji_title>.tit')->text();
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
                 $press['press_subtitle'] = '';
                 $press['company_name'] = $crawler->filter('.div_press_article_company_name>a')->text();
-                $output->writeln($press['company_name']);
+                //$output->writeln($press['company_name']);
 
                 $press['press_content_text'] = $crawler->filter('.description')->text();
                 $press['press_content'] = $crawler->filter('.description')->html();
@@ -89,6 +90,7 @@ class zaikeiCrawlerCommand extends ContainerAwareCommand
                 });
                 $press['images'] = $images;
                 $presses[] = $press;
+                //print_r($presses);exit;
             }
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);

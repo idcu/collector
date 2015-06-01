@@ -52,12 +52,14 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
             $pressUrls = $crawler->filter('#main>div.pressrelease>div>p>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
 
             $pressSource = 'http://www.atpress.ne.jp/';
             foreach($pressUrls as $pressUrl)
             {
+                //$pressUrl = 'http://www.atpress.ne.jp/view/62440';
+                //$output->writeln($pressUrl);
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->clear();
@@ -65,17 +67,17 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
 
                 $press['press_source'] = $pressSource;
                 $press['press_url'] = $pressUrl;
-                $output->writeln($press['press_url']);
+                //$output->writeln($press['press_url']);
                 $date = date_create_from_format('Y.m.d H:i', $crawler->filter('#pressdetail>.date')->text());
                 $press['press_publish_date'] = date_format($date, 'Y-m-d H:i:s');
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = $crawler->filter('#pressdetail>.ttl')->text();
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
                 $subtitle = $crawler->filter('#pressdetail>.subttl');
                 if ($subtitle->count()>0) $press['press_subtitle'] = $subtitle->text();
                 $press['company_name'] = $crawler->filter('#pressdetail>.publisher')->text();
-                $output->writeln($press['company_name']);
-
+                //$output->writeln($press['company_name']);
+                
                 $textArray = $crawler->filter('#pressdetail')->children()->each(function (Crawler $node, $i) {
                     if ($node->attr('class')=='txt')
                     {
@@ -91,7 +93,17 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
                     }
                 });
                 $press['press_content']=implode('',$htmlArray);
-
+                $files = $crawler->filter('.pressimg>h3>span>a')->attr('href');
+                if(!empty($files))
+                    $press['files'] = 'http://www.atpress.ne.jp'.$files;
+                $imageFiles = $crawler->filter('.slides>.slide>ul>li>a')->each(function (Crawler $node, $i) {
+                    $imageFile['url'] =  $node->attr('href');
+                    $uri = 'http://www.atpress.ne.jp'.$imageFile['url'];
+                    $imageFile['absolute_url'] = $uri;
+                    $imageFile['title'] = $node->attr('title');
+                    return $imageFile;
+                });
+                $press['imageFiles'] = $imageFiles;
                 $crawler->clear();
                 $crawler->addContent($press['press_content']);
                 $images = $crawler->filter('img')->each(function (Crawler $node, $i) {
@@ -103,8 +115,10 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
                     return $image;
                 });
                 $press['images'] = $images;
-                $presses[] = $press;
+                $presses[] = $press;                
             }
+            //print_r($presses);exit;
+            //$output->writeln($presses);
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);
             $result = $buzz->post("http://collector.cointelligence.cn/rest/presses",array(),json_encode($presses))->getContent();

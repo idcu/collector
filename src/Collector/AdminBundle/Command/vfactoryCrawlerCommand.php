@@ -52,12 +52,13 @@ class vfactoryCrawlerCommand extends ContainerAwareCommand{
             $pressUrls = $crawler->filter('table>tr>td>font>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
             
             foreach($pressUrls as $pressUrl)
             {
                 if (!preg_match('/^\/release\/\w+\.html/', $pressUrl)) continue;
+                
                 $response = $browser->get($crawlerUrl . $pressUrl);
                 $content = $response->getContent();
                 $crawler->clear();
@@ -65,19 +66,19 @@ class vfactoryCrawlerCommand extends ContainerAwareCommand{
             
                 $press['press_source'] = $crawlerUrl;
                 $press['press_url'] = $crawlerUrl . $pressUrl;
-                $output->writeln($press['press_url']);
+                //$output->writeln($press['press_url']);
                 
                 preg_match('/(\d+)?年(\d+)?月(\d+)?日\s(\d+)?時/', $crawler->filter('table>tr>td>.style3')->text(), $datas);
                 if( count( $datas ) < 5 ) $data = '';
                 $data = $datas[1] . '-' . $datas[2] . '-' . $datas[3] . ' ' . $datas[4] . ':00:00';
                 $press['press_publish_date'] = $data;
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 
                 $press['company_name'] = $crawler->filter('table>tr>td>h3')->text();
-                $output->writeln($press['company_name']);
+                //$output->writeln($press['company_name']);
 
                 $press['press_title'] =$crawler->filter('table>tr>td>h2>big>big')->text();
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
 
                 $textArray = $crawler->filter('#contents>tr>td>.style3')->each(function (Crawler $node, $i) {
                     return $node->text();
@@ -91,6 +92,7 @@ class vfactoryCrawlerCommand extends ContainerAwareCommand{
                 $press['press_content']=implode('',$htmlArray);
                 $presses[] = $press;
             }
+            
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);
             $result = $buzz->post("http://collector.cointelligence.cn/rest/presses",array(),json_encode($presses))->getContent();

@@ -51,7 +51,7 @@ class prwToOverseaCrawlerCommand extends ContainerAwareCommand
             $pressUrls = $crawler->filter('#contMainBox>div.h5-section>div.h5-article>div.articleMain>div.text>h2>a')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
 
             foreach ($pressUrls as $pressUrl) {
@@ -63,17 +63,17 @@ class prwToOverseaCrawlerCommand extends ContainerAwareCommand
 
                 $press['press_source'] = $pressSource;
                 $press['press_url'] = $pressUrl;
-                $output->writeln($press['press_url']);
+                //$output->writeln($press['press_url']);
                 //$date = date_create_from_format('Y年m月d日', $crawler->filter('.releaseInfo>.date')->text());
                 $press['press_publish_date'] = date('Y-m-d H:i:s',strtotime($crawler->filter('.releaseInfo>.date')->text()));
-                $output->writeln($press['press_publish_date']);
+                //$output->writeln($press['press_publish_date']);
                 $press['press_title'] = trim($crawler->filter('.releaseInfo>h1')->text());
-                $output->writeln($press['press_title']);
+                //$output->writeln($press['press_title']);
                 //$subtitle = $crawler->filter('#pressdetail>.subttl');
                 //if ($subtitle->count()>0) $press['press_subtitle'] = $subtitle->text();
                 $press['press_subtitle'] = '';
                 $press['company_name'] = $crawler->filter('.releaseInfo>.fromMember')->text();
-                $output->writeln($press['company_name']);
+                //$output->writeln($press['company_name']);
 
                 $press['press_content_text'] = $crawler->filter('.releaseText>.rel_honbun')->text();
                 $press['press_content'] = $crawler->filter('.releaseText>.rel_honbun')->html();

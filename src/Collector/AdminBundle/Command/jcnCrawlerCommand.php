@@ -42,21 +42,21 @@ class jcnCrawlerCommand extends ContainerAwareCommand
             $pageNum = 10;
         elseif ($range == 'all')
             $pageNum = 100;
-        $pressSource = 'http://www.japancorp.net/japan/';
+        $pressSource = 'http://www.jcnnewswire.com';
         for ($page = 1; $page <= $pageNum; $page++) {
-            $pressList = "http://www.japancorp.net/japan/all_news.asp?iPage=1&Page_Num=" . $page;
+            $pressList = "http://www.jcnnewswire.com/Default.aspx?sid=3&page=" . $page;
             $response = $browser->get($pressList);
             $content = $response->getContent();
             $crawler->addContent($content);
-            $pressUrls = $crawler->filter('p>a.newslink')->each(function (Crawler $node, $i) {
+            $pressUrls = $crawler->filter('td.articleDate>a.newslink')->each(function (Crawler $node, $i) {
                 return $node->attr('href');
             });
-            $output->writeln($pressUrls);
+            //$output->writeln($pressUrls);
             $presses = array();
 
             foreach ($pressUrls as $pressUrl) {
-                $pressUrl = 'http://www.japancorp.net' . $pressUrl;
-                //$pressUrl = 'http://www.japancorp.net/japan/Article.Asp?Art_ID=64176';
+                $pressUrl = 'http://www.jcnnewswire.com/' . $pressUrl;
+                //$pressUrl = 'http://www.jcnnewswire.com/Article.aspx?artid=22718&sid=3&headline=%E3%83%88%E3%83%A8%E3%82%BF%E3%80%81%E4%BA%BA%E4%BA%8B%E7%95%B0%E5%8B%95%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6';
                 $response = $browser->get($pressUrl);
                 $content = $response->getContent();
                 $crawler->clear();
@@ -64,31 +64,23 @@ class jcnCrawlerCommand extends ContainerAwareCommand
 
                 $press['press_source'] = $pressSource;
                 $press['press_url'] = $pressUrl;
-                $output->writeln($press['press_url']);
-                $companys = $crawler->filter('td')->each(function (Crawler $node, $i) {
-                    if ($node->attr('style') == 'font-size:16px;font-family:ＭＳ Ｐゴシック,Osaka,ＭＳ ゴシック,ヒラギノ角ゴ, sans-serif,verdana;line-height:20px;color:#990000;font-weight:bold;') {
-                        return $node->text();
-                    }
-                });
+                //$output->writeln($press['press_url']);
+                //2015年5月29日 03時35分
 
-                preg_match("/([0-9]*)年([0-9]*)月([0-9]*)日 ([0-9]*)時([0-59]*)分/", $crawler->filter('#release_body')->text(), $data);
-                $date = date_create_from_format('Y年月d日 H時i分', $data[0]);
-                if (!empty($date)) {
-                    $press['press_publish_date'] = date_format($date, 'Y-m-d H:i:s');
-                    $output->writeln($press['press_publish_date']);
-                }
-                $press['press_title'] = $crawler->filter('td.header')->text();
-                $output->writeln($press['press_title']);
-                $subtitle = $crawler->filter('td.bodytext>strong');
-                if ($subtitle->count() > 0)
-                    $press['press_subtitle'] = $subtitle->text();
-                if (!empty($companys[24]))
-                    $press['company_name'] = $companys[24];
-                $output->writeln($press['company_name']);
+                $date = $crawler->filter('#MainContent_releaseDate')->text();
+                $date = str_replace(array('年', '月', '日', '時', '分'), array('-', '-', '', ':', ''), $date);
+                $press['press_publish_date'] = $date;
+                $press['press_title'] = $crawler->filter('#MainContent_HeadLine')->text();
+                //$output->writeln($press['press_title']);
+                //$subtitle = $crawler->filter('td.bodytext>strong');
+                //if ($subtitle->count() > 0)
+                //$press['press_subtitle'] = $subtitle->text();
 
-                $press['press_content_text'] = $crawler->filter('#release_body')->text();
-                $press['press_content'] = $crawler->filter('#release_body')->html();
+                $press['company_name'] = $crawler->filter('#MainContent_companySource')->text();
+                //$output->writeln($press['company_name']);
 
+                $press['press_content_text'] = $crawler->filter('#MainContent_Body')->text();
+                $press['press_content'] = $crawler->filter('#MainContent_Body')->html();
                 $crawler->clear();
                 $crawler->addContent($press['press_content']);
                 $images = $crawler->filter('img')->each(function (Crawler $node, $i) {

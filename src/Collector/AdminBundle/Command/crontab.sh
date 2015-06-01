@@ -12,3 +12,10 @@ php app/console collector:admin:prwspecical_crawler
 php app/console collector:admin:prwtooversea_crawler
 php app/console collector:admin:valuepress_crawler
 php app/console collector:admin:zaikei_crawler
+php app/console collector:admin:vfactory_crawler
+php app/console collector:admin:mapion_prtimes_ajax_crawler
+php app/console collector:admin:mapion_prtimes_crawler
+php app/console collector:admin:mapion_valuepress_crawler
+php app/console collector:admin:jcncrawler_crawler
+php app/console collector:admin:prtimes_ajax_crawler
+

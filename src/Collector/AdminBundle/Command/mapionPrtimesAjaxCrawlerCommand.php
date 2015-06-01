@@ -61,7 +61,7 @@ class mapionPrtimesAjaxCrawlerCommand extends ContainerAwareCommand
                     try {
                         //$pressUrl = '/main/html/rd/p/000000027.000006024.html';
                         $pressUrl = 'http://prtimes.jp' . $pressUrl['url'];
-
+                        //$pressUrl = 'http://prtimes.jp/main/html/rd/p/000003337.000000000.html';
                         $response = $browser->get($pressUrl);
                         $content = $response->getContent();
                         $crawler->clear();
@@ -69,31 +69,45 @@ class mapionPrtimesAjaxCrawlerCommand extends ContainerAwareCommand
 
                         $press['press_source'] = $pressSource;
                         $press['press_url'] = $pressUrl;
-                        $output->writeln($press['press_url']);
+                        //$output->writeln($press['press_url']);
                         //                $output->writeln($crawler->filter('article')->html());
                         $press['press_publish_date'] = date('Y-m-d H:i:s', strtotime($crawler->filter('.header-release-detail>.information-release>time')->attr('datetime')));
-                        $output->writeln($press['press_publish_date']);
+                        //$output->writeln($press['press_publish_date']);
                         $press['press_title'] = $crawler->filter('.header-release-detail>h2')->text();
-                        $output->writeln($press['press_title']);
+                        //$output->writeln($press['press_title']);
                         $subtitle = $crawler->filter('.header-release-detail>h3');
                         if ($subtitle->count() > 0)
                             $press['press_subtitle'] = $subtitle->text();
                         try {
-                            $press['company_name'] = trim($crawler->filter('.information-release>.company-name>a')->text(), '');
+                            $press['company_name'] = trim($crawler->filter('.information-release>.company-name>a')->text());
                         } catch (\Exception $e) {
-                            $press['company_name'] = trim($crawler->filter('.information-release>.company-name')->text(), '');
+                            $press['company_name'] = trim($crawler->filter('.information-release>.company-name')->text());
                         }
-                        $output->writeln($press['company_name']);
+                        //$output->writeln($press['company_name']);
 
                         $textArray = $crawler->filter('.rbody')->children()->each(function (Crawler $node, $i) {
                             return $node->text();
                         });
                         $press['press_content_text'] = implode('\n', $textArray);
 
-                        $htmlArray = $crawler->filter('.rbody')->children()->each(function (Crawler $node, $i) {
-                            return $node->html();
+                        $htmlArray = $crawler->filter('.inner')->children()->each(function (Crawler $node, $i) {
+                            if ($node->attr('class') == 'r-image' || $node->attr('class') == 'rbody') {
+                                return $node->html();
+                            }
                         });
                         $press['press_content'] = implode('', $htmlArray);
+
+
+                        $file = $crawler->filter('p.dlmore>a')->attr('href');
+                        if (!empty($file)) {
+                            $press['files'] = 'http://www.prtimes.jp/' . $file;
+                        }
+                        $fileArray = $crawler->filter('.box>.file')->children()->each(function (Crawler $node, $i) {
+                            return $node->html();
+                        });
+                        $imageFileArray = $crawler->filter('ul.slide')->children()->each(function (Crawler $node, $i) {
+                            return $node->html();
+                        });
 
                         $crawler->clear();
                         $crawler->addContent($press['press_content']);
@@ -107,6 +121,27 @@ class mapionPrtimesAjaxCrawlerCommand extends ContainerAwareCommand
                             return $image;
                         });
                         $press['images'] = $images;
+                        $crawler->clear();
+                        $crawler->addContent(implode('', $imageFileArray));
+                        $imageFiles = $crawler->filter('a')->each(function (Crawler $node, $i) {
+                            $imageFile['url'] = $node->attr('href');
+                            $uri = 'http://www.prtimes.jp' . $imageFile['url'];
+                            $imageFile['absolute_url'] = $uri;
+                            $imageFile['title'] = $node->text();
+                            return $imageFile;
+                        });
+                        $press['imageFiles'] = $imageFiles;
+                        $crawler->clear();
+                        $crawler->addContent(implode('', $fileArray));
+                        $files = $crawler->filter('a')->each(function (Crawler $node, $i) {
+                            $file['url'] = $node->attr('href');
+                            $uri = 'http://www.prtimes.jp' . $file['url'];
+                            $file['absolute_url'] = $uri;
+                            $file['title'] = $node->text();
+                            return $file;
+                        });
+                        $press['files'] = $files;
+
                         $presses[] = $press;
                     } catch (\Exception $e) {
                         $output->writeln($e->getMessage());
