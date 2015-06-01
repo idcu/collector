@@ -1,0 +1,13 @@
+/composer.phar
+/web/bundles/
+/app/cache/*
+/app/logs/*
+/app/config/parameters.yml
+/web/media
+/web/assetic
+/build/
+/vendor/
+app/bootstrap.php.cache
+.idea/
+/bin/
+/app/app.sqlite
