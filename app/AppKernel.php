@@ -31,12 +31,12 @@ class AppKernel extends Kernel
 	    
             new Sonata\CoreBundle\SonataCoreBundle(),
             new Sonata\BlockBundle\SonataBlockBundle(),
+            new Sonata\ClassificationBundle\SonataClassificationBundle(),
             new Sonata\MediaBundle\SonataMediaBundle(),
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new Sensio\Bundle\BuzzBundle\SensioBuzzBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
             new FOS\ElasticaBundle\FOSElasticaBundle(),
-            new Marmelab\SonataElasticaBundle\MarmelabSonataElasticaBundle(),
 
             new Common\ConstantBundle\CommonConstantBundle(),
             new Common\MediaBundle\CommonMediaBundle(),
@@ -53,6 +53,7 @@ class AppKernel extends Kernel
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
+            $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
         }
 
         return $bundles;
