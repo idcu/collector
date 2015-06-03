@@ -22,7 +22,7 @@ class LoadSourceData implements FixtureInterface{
             array("共同通信PRワイヤー（駐日特派員向け）","http://prw.kyodonews.jp/opn/category/release/tokuhain/page/1/",0),
             array("JCN Network","http://www.japancorp.net/japan/",0),
             array("財経新聞 (ValuePress)","http://www.zaikei.co.jp/press/provider/26/",0),
-            array("Digital PR Platform","http://prtimes.jp/",0),
+            array("Digital PR Platform","http://digitalpr.jp/",0),
         );
 
         foreach ($sourceImport as $data)
