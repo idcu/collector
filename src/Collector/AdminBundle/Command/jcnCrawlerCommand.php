@@ -96,7 +96,8 @@ class jcnCrawlerCommand extends ContainerAwareCommand
             }
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);
-            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses", array(), json_encode($presses))->getContent();
+            $host = $this->getContainer()->getParameter("service_host");
+            $result = $buzz->post($host."/rest/presses",array(),json_encode($presses))->getContent();
             $output->writeln($result);
         }
     }
