@@ -10,7 +10,7 @@ class LoadSourceData implements FixtureInterface{
     public function load(ObjectManager $manager)
     {
         $sourceImport = array(
-            array("＠Press","http://www.atpress.ne.jp/",100),
+            array("＠Press","https://www.atpress.ne.jp",100),
             array("PR Times","http://prtimes.jp/",0),
             array("Value Press","http://www.value-press.com/",0),
             array("VFリリース","http://release.vfactory.jp/",0),

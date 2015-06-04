@@ -43,9 +43,12 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
             $pageNum = 10;
         elseif ($range == 'all')
             $pageNum = 100;
+
+        $pressSource = 'https://www.atpress.ne.jp';
+
         for ($page = 1 ;$page<=$pageNum;$page++)
         {
-            $pressList = "http://www.atpress.ne.jp/Default/SearchPr/page_id/".$page;
+            $pressList = $pressSource."/news/search/page_id/".$page."/";
             $response = $browser->get($pressList);
             $content = $response->getContent();
             $crawler->addContent($content);
@@ -55,7 +58,6 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
             //$output->writeln($pressUrls);
             $presses = array();
 
-            $pressSource = 'http://www.atpress.ne.jp/';
             foreach($pressUrls as $pressUrl)
             {
                 //$pressUrl = 'http://www.atpress.ne.jp/view/62440';
@@ -95,10 +97,10 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
                 $press['press_content']=implode('',$htmlArray);
                 $files = $crawler->filter('.pressimg>h3>span>a')->attr('href');
                 if(!empty($files))
-                    $press['files'] = 'http://www.atpress.ne.jp'.$files;
-                $imageFiles = $crawler->filter('.slides>.slide>ul>li>a')->each(function (Crawler $node, $i) {
+                    $press['files'] = $pressSource.$files;
+                $imageFiles = $crawler->filter('.slides>.slide>ul>li>a')->each(function (Crawler $node, $i,$pressSource) {
                     $imageFile['url'] =  $node->attr('href');
-                    $uri = 'http://www.atpress.ne.jp'.$imageFile['url'];
+                    $uri = $pressSource.$imageFile['url'];
                     $imageFile['absolute_url'] = $uri;
                     $imageFile['title'] = $node->attr('title');
                     return $imageFile;
@@ -106,10 +108,10 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
                 $press['imageFiles'] = $imageFiles;
                 $crawler->clear();
                 $crawler->addContent($press['press_content']);
-                $images = $crawler->filter('img')->each(function (Crawler $node, $i) {
+                $images = $crawler->filter('img')->each(function (Crawler $node, $i,$pressSource) {
                     $image['url'] =  $node->attr('src');
                     $urlParts = parse_url($image['url']);
-                    $uri = 'http://www.atpress.ne.jp'.$urlParts['path'];
+                    $uri = $pressSource.$urlParts['path'];
                     $image['absolute_url'] = $uri;
                     $image['title'] = $node->attr('title');
                     return $image;
@@ -121,7 +123,8 @@ class atpressCrawlerCommand extends ContainerAwareCommand{
             //$output->writeln($presses);
             $buzz = $this->getContainer()->get('buzz');
             $buzz->getClient()->setTimeout(100000);
-            $result = $buzz->post("http://collector.cointelligence.cn/rest/presses",array(),json_encode($presses))->getContent();
+            $host = $this->getContainer()->getParameter("service_host");
+            $result = $buzz->post($host."/rest/presses",array(),json_encode($presses))->getContent();
             $output->writeln($result);
         }
     }
